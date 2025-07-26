@@ -7,7 +7,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      background: url("/519607810_122102712680945628_6741922299376501090_n.jpg") no-repeat center center fixed;
+      background: url("/5f49a6a3-c971-4363-a10e-d9ea8b94eb01.jpg") no-repeat center center fixed;
       background-size: cover;
       font-family: 'Orbitron', sans-serif;
       color: white;
@@ -18,101 +18,105 @@
 
     h1 {
       font-size: 32px;
-      color: #d291ff;
-      text-shadow: 0 0 4px #000, 0 0 6px #000;
+      color: #e29bff;
+      text-shadow: 0 0 5px #000, 0 0 12px #000;
       margin-top: 20px;
     }
 
-    #contenedor {
-      margin: 100px auto 40px;
-      width: 380px;
-      height: 380px;
-      padding: 0;
-      border-radius: 50%;
-      border: 3px solid #b76aff;
-      background-color: rgba(0, 0, 0, 0.5);
-      box-shadow: 0 0 25px #000;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-
-    input[type="text"] {
+    #premios-automaticos {
       margin-top: 10px;
-      padding: 10px;
-      width: 85%;
-      font-size: 16px;
-      border: 2px solid #b76aff;
-      border-radius: 8px;
-      outline: none;
-      text-align: center;
     }
 
-    button {
-      margin-top: 18px;
-      padding: 12px 24px;
-      font-size: 18px;
-      background-color: #d291ff;
-      border: none;
-      color: black;
-      border-radius: 100px;
-      cursor: pointer;
-      box-shadow: 0 0 10px #b76aff, 0 0 20px #000;
-    }
-
-    #resultado {
-      margin-top: 16px;
-      font-size: 18px;
-      min-height: 24px;
-    }
-
-    .leyenda {
-      margin-top: 6px;
-      color: #ffffffcc;
-      font-size: 15px;
-    }
-
-    .mensaje-extra {
-      margin-top: 30px;
+    .notificacion-premio {
       font-size: 17px;
-      color: #e0b3ff;
-      text-shadow: 0 0 5px #000;
-      animation: parpadeo 1.2s infinite alternate, flotar 3s ease-in-out infinite;
-    }
-
-    @keyframes parpadeo {
-      0% { opacity: 1; text-shadow: 0 0 8px #d291ff, 0 0 15px #000; }
-      100% { opacity: 0.5; text-shadow: 0 0 2px #000; }
-    }
-
-    @keyframes flotar {
-      0%, 100% { transform: translateY(0); }
-      50% { transform: translateY(-6px); }
-    }
-
-    .ticker-premio {
-      margin-top: 15px;
-      background: rgba(0, 0, 0, 0.6);
-      border: 2px solid #d291ff;
-      padding: 12px 25px;
-      border-radius: 25px;
-      color: #fff;
       font-weight: bold;
-      font-size: 15px;
+      background-color: rgba(0, 0, 0, 0.4);
+      border: 2px solid #e29bff;
+      padding: 10px 20px;
+      border-radius: 15px;
+      margin: 10px auto;
+      width: fit-content;
       animation: aparecer 0.5s ease;
-      display: inline-block;
     }
 
     @keyframes aparecer {
       from { opacity: 0; transform: translateY(10px); }
       to { opacity: 1; transform: translateY(0); }
     }
+
+    #contenedor {
+      margin: 40px auto 40px;
+      width: 380px;
+      height: 380px;
+      padding: 30px;
+      border-radius: 50%;
+      border: 3px solid #fff;
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 25px #d38aff;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 80%;
+      font-size: 16px;
+      border: 2px solid #fff;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+      margin-bottom: 15px;
+    }
+
+    button {
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #e29bff;
+      border: none;
+      color: black;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #000, 0 0 20px #000;
+    }
+
+    #resultado {
+      margin-top: 15px;
+      font-size: 20px;
+      min-height: 24px;
+    }
+
+    .leyenda {
+      margin-top: 15px;
+      color: #ffffffcc;
+      font-size: 16px;
+    }
+
+    .mensaje-extra {
+      margin-top: 20px;
+      font-size: 18px;
+      color: #e29bff;
+      text-shadow: 0 0 5px #000;
+      animation: parpadeo 1.2s infinite alternate, flotar 2.5s ease-in-out infinite;
+    }
+
+    @keyframes parpadeo {
+      0% { opacity: 1; text-shadow: 0 0 8px #e29bff, 0 0 15px #000; }
+      100% { opacity: 0.5; text-shadow: 0 0 2px #000; }
+    }
+
+    @keyframes flotar {
+      0% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
+      100% { transform: translateY(0); }
+    }
   </style>
 </head>
 <body>
 
   <h1>SABRI XBET</h1>
+
   <div id="premios-automaticos"></div>
 
   <div id="contenedor">
@@ -122,7 +126,7 @@
     <div class="leyenda">🍀 Girá la rueda y probá tu suerte 🍀</div>
   </div>
 
-  <div class="mensaje-extra">🎁 ¿TENÉS PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
+  <div class="mensaje-extra">🎁 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
 
   <script>
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
@@ -153,7 +157,7 @@
       .then(data => {
         if (data.estado === "valido") {
           boton.style.display = "none";
-          resultado.style.color = "#90ee90";
+          resultado.style.color = "#00ff00";
           resultado.innerHTML = "✅ " + data.mensaje;
           usados[codigoIngresado] = true;
           localStorage.setItem("usados", JSON.stringify(usados));
@@ -173,18 +177,18 @@
     }
 
     const premios = [
-      "SABRI****: GANÓ 500 FICHAS", "CLIENTE****: GANÓ 10K EN TRANSFERENCIA",
-      "ROSE****: GANÓ 3.000 FICHAS", "LUCA****: GANÓ 30% EXTRA",
-      "MARTI****: GANÓ 1.500 FICHAS", "LILA****: GANÓ 5K EN FICHAS",
-      "VIOLE****: GANÓ 3K EN FICHAS", "XBET****: GANÓ 1.000 FICHAS",
-      "NATI****: GANÓ 20% EXTRA", "JOHA****: GANÓ 2.000 FICHAS"
+      "MARI****: GANÓ 10K EN TRANSFERENCIA", "LULI****: GANÓ 3K EN FICHAS",
+      "JULI****: GANÓ 15% EXTRA", "BARB****: GANÓ 500 FICHAS",
+      "TINA****: GANÓ 5.000 FICHAS", "NANI****: GANÓ 20% DE REGALO",
+      "ROSA****: GANÓ 10K EN TRANSFERENCIA", "LOLA****: GANÓ 5% EXTRA",
+      "PELU****: GANÓ 4.000 FICHAS", "VANE****: GANÓ 30% DE REGALO"
     ];
 
     const contenedorPremios = document.getElementById("premios-automaticos");
 
     function mostrarPremio() {
       const mensaje = premios[Math.floor(Math.random() * premios.length)];
-      contenedorPremios.innerHTML = `<div class="ticker-premio">${mensaje}</div>`;
+      contenedorPremios.innerHTML = `<div class="notificacion-premio">${mensaje}</div>`;
     }
 
     setInterval(mostrarPremio, 5000);
