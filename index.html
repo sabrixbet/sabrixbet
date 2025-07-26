@@ -1,1 +1,196 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>SABRI XBET</title>
+  <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      background: url("/519607810_122102712680945628_6741922299376501090_n.jpg") no-repeat center center fixed;
+      background-size: cover;
+      font-family: 'Orbitron', sans-serif;
+      color: white;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+    }
 
+    h1 {
+      font-size: 32px;
+      color: #d291ff;
+      text-shadow: 0 0 4px #000, 0 0 6px #000;
+      margin-top: 20px;
+    }
+
+    #contenedor {
+      margin: 160px auto 40px;
+      width: 260px;
+      height: 260px;
+      padding: 30px 20px;
+      border-radius: 50%;
+      border: 3px solid #b76aff;
+      background-color: rgba(0, 0, 0, 0.5);
+      box-shadow: 0 0 25px #000;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    input[type="text"] {
+      padding: 10px;
+      width: 85%;
+      font-size: 16px;
+      border: 2px solid #b76aff;
+      border-radius: 8px;
+      outline: none;
+      text-align: center;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 18px;
+      background-color: #d291ff;
+      border: none;
+      color: black;
+      border-radius: 100px;
+      cursor: pointer;
+      box-shadow: 0 0 10px #b76aff, 0 0 20px #000;
+    }
+
+    #resultado {
+      margin-top: 20px;
+      font-size: 18px;
+      min-height: 24px;
+    }
+
+    .leyenda {
+      margin-top: 10px;
+      color: #ffffffcc;
+      font-size: 15px;
+    }
+
+    .mensaje-extra {
+      margin-top: 30px;
+      font-size: 17px;
+      color: #e0b3ff;
+      text-shadow: 0 0 5px #000;
+      animation: parpadeo 1.2s infinite alternate, flotar 3s ease-in-out infinite;
+    }
+
+    @keyframes parpadeo {
+      0% { opacity: 1; text-shadow: 0 0 8px #d291ff, 0 0 15px #000; }
+      100% { opacity: 0.5; text-shadow: 0 0 2px #000; }
+    }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-6px); }
+    }
+
+    .ticker-premio {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(0, 0, 0, 0.6);
+      border: 2px solid #d291ff;
+      padding: 12px 25px;
+      border-radius: 25px;
+      color: #fff;
+      font-weight: bold;
+      font-size: 15px;
+      animation: aparecer 0.5s ease;
+    }
+
+    @keyframes aparecer {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+  </style>
+</head>
+<body>
+
+  <h1>SABRI XBET</h1>
+
+  <div id="contenedor">
+    <input type="text" id="codigo" placeholder="Ingresá tu código"/>
+    <button id="botonTirar" onclick="tirar()">🎰 Tirar la rueda</button>
+    <div id="resultado"></div>
+    <div class="leyenda">🍀 Girá la rueda y probá tu suerte 🍀</div>
+  </div>
+
+  <div class="mensaje-extra">🎁 ¿TENÉS PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
+  <div id="premios-automaticos"></div>
+
+  <script>
+    const usados = JSON.parse(localStorage.getItem('usados') || '{}');
+
+    function tirar() {
+      const codigoIngresado = document.getElementById("codigo").value.trim();
+      const resultado = document.getElementById("resultado");
+      const boton = document.getElementById("botonTirar");
+
+      if (!codigoIngresado) {
+        resultado.style.color = "orange";
+        resultado.innerHTML = "⚠️ Ingresá un código.";
+        return;
+      }
+
+      if (usados[codigoIngresado]) {
+        resultado.style.color = "#ffcc00";
+        resultado.innerHTML = "🚫 Este código ya fue utilizado.";
+        return;
+      }
+
+      fetch('/api/verificar-codigo', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ codigo: codigoIngresado })
+      })
+      .then(response => response.json())
+      .then(data => {
+        if (data.estado === "valido") {
+          boton.style.display = "none";
+          resultado.style.color = "#90ee90";
+          resultado.innerHTML = "✅ " + data.mensaje;
+          usados[codigoIngresado] = true;
+          localStorage.setItem("usados", JSON.stringify(usados));
+        } else if (data.estado === "usado") {
+          resultado.style.color = "#ffcc00";
+          resultado.innerHTML = "🚫 Este código ya fue utilizado.";
+        } else {
+          resultado.style.color = "#ff3333";
+          resultado.innerHTML = "❌ Código inválido. Probá con otro.";
+        }
+      })
+      .catch(error => {
+        console.error("Error al verificar el código:", error);
+        resultado.style.color = "red";
+        resultado.innerHTML = "❌ Código inválido.";
+      });
+    }
+
+    const premios = [
+      "SABRI****: GANÓ 500 FICHAS", "CLIENTE****: GANÓ 10K EN TRANSFERENCIA",
+      "ROSE****: GANÓ 3.000 FICHAS", "LUCA****: GANÓ 30% EXTRA",
+      "MARTI****: GANÓ 1.500 FICHAS", "LILA****: GANÓ 5K EN FICHAS",
+      "VIOLE****: GANÓ 3K EN FICHAS", "XBET****: GANÓ 1.000 FICHAS",
+      "NATI****: GANÓ 20% EXTRA", "JOHA****: GANÓ 2.000 FICHAS"
+    ];
+
+    const contenedorPremios = document.getElementById("premios-automaticos");
+
+    function mostrarPremio() {
+      const mensaje = premios[Math.floor(Math.random() * premios.length)];
+      contenedorPremios.innerHTML = `<div class="ticker-premio">${mensaje}</div>`;
+    }
+
+    setInterval(mostrarPremio, 5000);
+    mostrarPremio();
+  </script>
+
+</body>
+</html>
