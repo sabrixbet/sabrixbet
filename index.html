@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SABRI XBET</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
@@ -11,119 +11,110 @@
       background-size: cover;
       font-family: 'Orbitron', sans-serif;
       color: white;
-      text-align: center;
       margin: 0;
       padding: 0;
+      text-align: center;
     }
 
     h1 {
-      font-size: 32px;
-      color: #e29bff;
-      text-shadow: 0 0 5px #000, 0 0 12px #000;
+      font-size: 36px;
+      color: #d59fff;
+      text-shadow: 0 0 5px #000;
       margin-top: 20px;
     }
 
-    #premios-automaticos {
-      margin-top: 10px;
-    }
-
-    .notificacion-premio {
-      font-size: 17px;
-      font-weight: bold;
+    .slot-container {
+      margin: 20px auto 10px;
+      width: 90%;
+      max-width: 360px;
+      display: flex;
+      justify-content: space-around;
       background-color: rgba(0, 0, 0, 0.4);
-      border: 2px solid #e29bff;
-      padding: 10px 20px;
-      border-radius: 15px;
-      margin: 10px auto;
-      width: fit-content;
-      animation: aparecer 0.5s ease;
+      border-radius: 12px;
+      padding: 15px;
+      box-shadow: 0 0 10px #000;
     }
 
-    @keyframes aparecer {
-      from { opacity: 0; transform: translateY(10px); }
-      to { opacity: 1; transform: translateY(0); }
+    .slot {
+      width: 100px;
+      height: 50px;
+      background-color: #7c4dff;
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 16px;
+      font-weight: bold;
+      animation: spin 2s linear infinite;
+      color: #fff;
+      text-shadow: 0 0 3px #000;
+    }
+
+    @keyframes spin {
+      0% { transform: translateY(0); opacity: 1; }
+      50% { transform: translateY(-10px); opacity: 0.6; }
+      100% { transform: translateY(0); opacity: 1; }
     }
 
     #contenedor {
-      margin: 40px auto 40px;
-      width: 380px;
-      height: 380px;
-      padding: 30px;
-      border-radius: 50%;
-      border: 3px solid #fff;
+      margin: 50px auto;
+      max-width: 400px;
       background-color: rgba(0, 0, 0, 0.5);
-      box-shadow: 0 0 25px #d38aff;
-      display: flex;
-      flex-direction: column;
-      justify-content: center;
-      align-items: center;
+      border-radius: 30px;
+      padding: 30px;
+      box-shadow: 0 0 15px #000;
     }
 
     input[type="text"] {
       padding: 10px;
       width: 80%;
       font-size: 16px;
-      border: 2px solid #fff;
-      border-radius: 8px;
-      outline: none;
+      border-radius: 10px;
+      border: none;
       text-align: center;
-      margin-bottom: 15px;
+      outline: none;
     }
 
     button {
-      padding: 14px 28px;
-      font-size: 18px;
-      background-color: #e29bff;
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      background-color: #d59fff;
       border: none;
-      color: black;
       border-radius: 100px;
       cursor: pointer;
-      box-shadow: 0 0 10px #000, 0 0 20px #000;
+      color: black;
+      box-shadow: 0 0 10px #000;
     }
 
     #resultado {
-      margin-top: 15px;
+      margin-top: 20px;
       font-size: 20px;
       min-height: 24px;
     }
 
-    .leyenda {
-      margin-top: 15px;
-      color: #ffffffcc;
-      font-size: 16px;
-    }
-
     .mensaje-extra {
-      margin-top: 20px;
+      margin-top: 30px;
       font-size: 18px;
-      color: #e29bff;
+      color: #d59fff;
       text-shadow: 0 0 5px #000;
-      animation: parpadeo 1.2s infinite alternate, flotar 2.5s ease-in-out infinite;
-    }
-
-    @keyframes parpadeo {
-      0% { opacity: 1; text-shadow: 0 0 8px #e29bff, 0 0 15px #000; }
-      100% { opacity: 0.5; text-shadow: 0 0 2px #000; }
-    }
-
-    @keyframes flotar {
-      0% { transform: translateY(0); }
-      50% { transform: translateY(-5px); }
-      100% { transform: translateY(0); }
     }
   </style>
 </head>
 <body>
-
   <h1>SABRI XBET</h1>
 
-  <div id="premios-automaticos"></div>
+  <div class="slot-container">
+    <div class="slot" id="nombre">SABRI****</div>
+    <div class="slot" id="premio">GANÓ</div>
+    <div class="slot" id="valor">10K</div>
+  </div>
 
   <div id="contenedor">
     <input type="text" id="codigo" placeholder="Ingresá tu código"/>
+    <br/>
     <button id="botonTirar" onclick="tirar()">🎰 Tirar la rueda</button>
     <div id="resultado"></div>
-    <div class="leyenda">🍀 Girá la rueda y probá tu suerte 🍀</div>
   </div>
 
   <div class="mensaje-extra">🎁 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
@@ -132,17 +123,16 @@
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
     function tirar() {
-      const codigoIngresado = document.getElementById("codigo").value.trim();
+      const codigo = document.getElementById("codigo").value.trim();
       const resultado = document.getElementById("resultado");
-      const boton = document.getElementById("botonTirar");
 
-      if (!codigoIngresado) {
+      if (!codigo) {
         resultado.style.color = "orange";
         resultado.innerHTML = "⚠️ Ingresá un código.";
         return;
       }
 
-      if (usados[codigoIngresado]) {
+      if (usados[codigo]) {
         resultado.style.color = "#ffcc00";
         resultado.innerHTML = "🚫 Este código ya fue utilizado.";
         return;
@@ -151,49 +141,40 @@
       fetch('/api/verificar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codigo: codigoIngresado })
+        body: JSON.stringify({ codigo })
       })
-      .then(response => response.json())
+      .then(res => res.json())
       .then(data => {
         if (data.estado === "valido") {
-          boton.style.display = "none";
           resultado.style.color = "#00ff00";
           resultado.innerHTML = "✅ " + data.mensaje;
-          usados[codigoIngresado] = true;
+          usados[codigo] = true;
           localStorage.setItem("usados", JSON.stringify(usados));
         } else if (data.estado === "usado") {
           resultado.style.color = "#ffcc00";
           resultado.innerHTML = "🚫 Este código ya fue utilizado.";
         } else {
           resultado.style.color = "#ff3333";
-          resultado.innerHTML = "❌ Código inválido. Probá con otro.";
+          resultado.innerHTML = "❌ Código inválido.";
         }
       })
-      .catch(error => {
-        console.error("Error al verificar el código:", error);
+      .catch(err => {
         resultado.style.color = "red";
-        resultado.innerHTML = "❌ Código inválido.";
+        resultado.innerHTML = "❌ Error al verificar.";
       });
     }
 
-    const premios = [
-      "MARI****: GANÓ 10K EN TRANSFERENCIA", "LULI****: GANÓ 3K EN FICHAS",
-      "JULI****: GANÓ 15% EXTRA", "BARB****: GANÓ 500 FICHAS",
-      "TINA****: GANÓ 5.000 FICHAS", "NANI****: GANÓ 20% DE REGALO",
-      "ROSA****: GANÓ 10K EN TRANSFERENCIA", "LOLA****: GANÓ 5% EXTRA",
-      "PELU****: GANÓ 4.000 FICHAS", "VANE****: GANÓ 30% DE REGALO"
-    ];
+    const nombres = ["SABRI****", "LUCI****", "VALI****", "ROXY****", "NANY****"];
+    const premios = ["GANÓ", "GANÓ", "GANÓ"];
+    const valores = ["10K", "3.000 FICHAS", "20%", "5K", "30%"];
 
-    const contenedorPremios = document.getElementById("premios-automaticos");
-
-    function mostrarPremio() {
-      const mensaje = premios[Math.floor(Math.random() * premios.length)];
-      contenedorPremios.innerHTML = `<div class="notificacion-premio">${mensaje}</div>`;
+    function actualizarSlots() {
+      document.getElementById("nombre").innerText = nombres[Math.floor(Math.random() * nombres.length)];
+      document.getElementById("premio").innerText = premios[Math.floor(Math.random() * premios.length)];
+      document.getElementById("valor").innerText = valores[Math.floor(Math.random() * valores.length)];
     }
 
-    setInterval(mostrarPremio, 5000);
-    mostrarPremio();
+    setInterval(actualizarSlots, 3000);
   </script>
-
 </body>
 </html>
