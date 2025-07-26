@@ -1,97 +1,83 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-  <meta charset="UTF-8">
+  <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>SABRI XBET</title>
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      background: url("/5f49a6a3-c971-4363-a10e-d9ea8b94eb01.jpg") no-repeat center center fixed;
+      background: url("5f49a6a3-c971-4363-a10e-d9ea8b94eb01.jpg") no-repeat center center fixed;
       background-size: cover;
       font-family: 'Orbitron', sans-serif;
       color: white;
+      text-align: center;
       margin: 0;
       padding: 0;
-      text-align: center;
     }
 
     h1 {
       font-size: 36px;
-      color: #e6b3ff;
-      text-shadow: 
-        2px 2px 0 #000,
-       -2px 2px 0 #000,
-        2px -2px 0 #000,
-       -2px -2px 0 #000,
-        0 0 5px #e6b3ff,
-        0 0 10px #cc66ff,
-        0 0 15px #cc66ff;
+      color: #d37bff;
+      text-shadow: 0 0 6px #000, 0 0 15px #d37bff;
       margin-top: 20px;
+      -webkit-text-stroke: 1px black;
     }
 
-    .slot-container {
-      margin: 20px auto 10px;
-      width: 90%;
-      max-width: 360px;
+    #animacion-premios {
       display: flex;
-      justify-content: space-around;
-      background-color: rgba(0, 0, 0, 0.4);
-      border-radius: 12px;
-      padding: 15px;
-      box-shadow: 0 0 10px #000;
-    }
-
-    .slot {
-      width: 100px;
-      height: 50px;
-      background-color: #7c4dff;
-      border-radius: 10px;
-      display: flex;
-      align-items: center;
       justify-content: center;
+      gap: 30px;
+      margin: 30px 0;
       font-size: 16px;
-      font-weight: bold;
-      animation: spin 2s linear infinite;
-      color: #fff;
-      text-shadow: 0 0 3px #000;
+      color: #ffccff;
+      animation: flotar 2s ease-in-out infinite;
     }
 
-    @keyframes spin {
-      0% { transform: translateY(0); opacity: 1; }
-      50% { transform: translateY(-10px); opacity: 0.6; }
-      100% { transform: translateY(0); opacity: 1; }
+    .slot-col {
+      background-color: rgba(0, 0, 0, 0.5);
+      border: 2px solid #d37bff;
+      padding: 10px 20px;
+      border-radius: 12px;
+      min-width: 120px;
     }
 
     #contenedor {
-      margin: 50px auto;
+      margin: 30px auto;
       max-width: 400px;
-      background-color: rgba(0, 0, 0, 0.5);
-      border-radius: 30px;
-      padding: 30px;
-      box-shadow: 0 0 15px #000;
+    }
+
+    .rueda-box {
+      width: 380px;
+      height: 380px;
+      border-radius: 50%;
+      background-color: rgba(0, 0, 0, 0.6);
+      border: 3px solid #d37bff;
+      box-shadow: 0 0 20px #000;
+      margin: 0 auto;
+      padding-top: 50px;
     }
 
     input[type="text"] {
       padding: 10px;
       width: 80%;
       font-size: 16px;
-      border-radius: 10px;
-      border: none;
-      text-align: center;
+      border: 2px solid #000;
+      border-radius: 8px;
       outline: none;
+      text-align: center;
     }
 
     button {
       margin-top: 20px;
-      padding: 12px 24px;
-      font-size: 16px;
-      background-color: #d59fff;
+      padding: 14px 28px;
+      font-size: 18px;
+      background-color: #d37bff;
       border: none;
+      color: black;
       border-radius: 100px;
       cursor: pointer;
-      color: black;
-      box-shadow: 0 0 10px #000;
+      box-shadow: 0 0 10px #000, 0 0 20px #000;
     }
 
     #resultado {
@@ -101,87 +87,95 @@
     }
 
     .mensaje-extra {
-      margin-top: 30px;
+      margin-top: 25px;
       font-size: 18px;
-      color: #d59fff;
+      color: #ffccff;
       text-shadow: 0 0 5px #000;
+      animation: parpadeo 1.2s infinite alternate, flotar 2.5s ease-in-out infinite;
+    }
+
+    @keyframes parpadeo {
+      0% { opacity: 1; text-shadow: 0 0 8px #d37bff, 0 0 15px #000; }
+      100% { opacity: 0.5; text-shadow: 0 0 2px #000; }
+    }
+
+    @keyframes flotar {
+      0%, 100% { transform: translateY(0); }
+      50% { transform: translateY(-5px); }
     }
   </style>
 </head>
 <body>
+
   <h1>SABRI XBET</h1>
 
-  <div class="slot-container">
-    <div class="slot" id="nombre">SABRI****</div>
-    <div class="slot" id="premio">GANÓ</div>
-    <div class="slot" id="valor">10K</div>
+  <div id="animacion-premios">
+    <div class="slot-col" id="col1">🎉 LULI****</div>
+    <div class="slot-col" id="col2">GANÓ 3000 FICHAS</div>
+    <div class="slot-col" id="col3">🔥</div>
   </div>
 
   <div id="contenedor">
-    <input type="text" id="codigo" placeholder="Ingresá tu código"/>
-    <br/>
-    <button id="botonTirar" onclick="tirar()">🎰 Tirar la rueda</button>
-    <div id="resultado"></div>
+    <div class="rueda-box">
+      <input type="text" id="codigo" placeholder="Ingresá tu código"/>
+      <br/>
+      <button id="botonTirar" onclick="tirar()">🎰 Tirar la rueda</button>
+      <div id="resultado"></div>
+    </div>
   </div>
 
-  <div class="mensaje-extra">🎁 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
+  <div class="mensaje-extra">📸 Si tenés premio, ¡sacá captura y enviala YA!</div>
 
   <script>
-    const usados = JSON.parse(localStorage.getItem('usados') || '{}');
+    function animarSlots() {
+      const nombres = ["LULI****", "NANI****", "SAMI****", "XBET****", "MILA****", "ROBE****"];
+      const premios = ["GANÓ 500 FICHAS", "GANÓ 10% EXTRA", "GANÓ 3K", "GANÓ 20% REGALO", "GANÓ 5K", "GANÓ NADA 😢"];
+      const emojis = ["🎉", "💥", "🔥", "🎁", "✨", "❌"];
+
+      document.getElementById("col1").textContent = nombres[Math.floor(Math.random() * nombres.length)];
+      document.getElementById("col2").textContent = premios[Math.floor(Math.random() * premios.length)];
+      document.getElementById("col3").textContent = emojis[Math.floor(Math.random() * emojis.length)];
+    }
+
+    setInterval(animarSlots, 3000);
 
     function tirar() {
-      const codigo = document.getElementById("codigo").value.trim();
+      const codigoIngresado = document.getElementById("codigo").value.trim();
       const resultado = document.getElementById("resultado");
+      const boton = document.getElementById("botonTirar");
 
-      if (!codigo) {
+      if (!codigoIngresado) {
         resultado.style.color = "orange";
         resultado.innerHTML = "⚠️ Ingresá un código.";
-        return;
-      }
-
-      if (usados[codigo]) {
-        resultado.style.color = "#ffcc00";
-        resultado.innerHTML = "🚫 Este código ya fue utilizado.";
         return;
       }
 
       fetch('/api/verificar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ codigo })
+        body: JSON.stringify({ codigo: codigoIngresado })
       })
-      .then(res => res.json())
+      .then(response => response.json())
       .then(data => {
         if (data.estado === "valido") {
+          boton.style.display = "none";
           resultado.style.color = "#00ff00";
           resultado.innerHTML = "✅ " + data.mensaje;
-          usados[codigo] = true;
-          localStorage.setItem("usados", JSON.stringify(usados));
         } else if (data.estado === "usado") {
           resultado.style.color = "#ffcc00";
           resultado.innerHTML = "🚫 Este código ya fue utilizado.";
         } else {
           resultado.style.color = "#ff3333";
-          resultado.innerHTML = "❌ Código inválido.";
+          resultado.innerHTML = "❌ Código inválido. Probá con otro.";
         }
       })
-      .catch(err => {
+      .catch(error => {
+        console.error("Error al verificar el código:", error);
         resultado.style.color = "red";
-        resultado.innerHTML = "❌ Error al verificar.";
+        resultado.innerHTML = "❌ Error al verificar el código.";
       });
     }
-
-    const nombres = ["SABRI****", "LUCI****", "VALI****", "ROXY****", "NANY****"];
-    const premios = ["GANÓ", "GANÓ", "GANÓ"];
-    const valores = ["10K", "3.000 FICHAS", "20%", "5K", "30%"];
-
-    function actualizarSlots() {
-      document.getElementById("nombre").innerText = nombres[Math.floor(Math.random() * nombres.length)];
-      document.getElementById("premio").innerText = premios[Math.floor(Math.random() * premios.length)];
-      document.getElementById("valor").innerText = valores[Math.floor(Math.random() * valores.length)];
-    }
-
-    setInterval(actualizarSlots, 3000);
   </script>
+
 </body>
 </html>
