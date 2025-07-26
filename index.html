@@ -91,10 +91,7 @@
     }
 
     .ticker-premio {
-      position: fixed;
-      bottom: 20px;
-      left: 50%;
-      transform: translateX(-50%);
+      margin-top: 15px;
       background: rgba(0, 0, 0, 0.6);
       border: 2px solid #d291ff;
       padding: 12px 25px;
@@ -103,6 +100,7 @@
       font-weight: bold;
       font-size: 15px;
       animation: aparecer 0.5s ease;
+      display: inline-block;
     }
 
     @keyframes aparecer {
@@ -114,6 +112,7 @@
 <body>
 
   <h1>SABRI XBET</h1>
+  <div id="premios-automaticos"></div>
 
   <div id="contenedor">
     <input type="text" id="codigo" placeholder="Ingresá tu código"/>
@@ -123,7 +122,6 @@
   </div>
 
   <div class="mensaje-extra">🎁 ¿TENÉS PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
-  <div id="premios-automaticos"></div>
 
   <script>
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
