@@ -94,6 +94,19 @@
       box-shadow: 0 0 10px #000;
     }
 
+    #botonRecargar {
+      margin-top: 25px;
+      padding: 10px 22px;
+      font-size: 16px;
+      background-color: #222;
+      color: #d59fff;
+      border: 2px solid #d59fff;
+      border-radius: 30px;
+      cursor: pointer;
+      display: none;
+      animation: aparecer 0.4s ease;
+    }
+
     #resultado {
       margin-top: 20px;
       font-size: 20px;
@@ -122,6 +135,7 @@
     <br/>
     <button id="botonTirar" onclick="tirar()">🌹 Tirar la rueda</button>
     <div id="resultado"></div>
+    <button id="botonRecargar" onclick="location.reload()">👉 Presioná acá para colocar el siguiente código</button>
   </div>
 
   <div class="mensaje-extra">🏱 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
@@ -130,8 +144,11 @@
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
     function tirar() {
-      const codigo = document.getElementById("codigo").value.trim();
+      const codigoInput = document.getElementById("codigo");
+      const boton = document.getElementById("botonTirar");
       const resultado = document.getElementById("resultado");
+      const botonRecargar = document.getElementById("botonRecargar");
+      const codigo = codigoInput.value.trim();
 
       if (!codigo) {
         resultado.style.color = "orange";
@@ -164,10 +181,16 @@
           resultado.style.color = "#ff3333";
           resultado.innerHTML = "❌ Código inválido.";
         }
+        codigoInput.disabled = true;
+        boton.disabled = true;
+        botonRecargar.style.display = "inline-block";
       })
       .catch(err => {
         resultado.style.color = "red";
         resultado.innerHTML = "❌ Error al verificar.";
+        codigoInput.disabled = true;
+        boton.disabled = true;
+        botonRecargar.style.display = "inline-block";
       });
     }
 
