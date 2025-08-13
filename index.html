@@ -19,7 +19,7 @@
     h1 {
       font-size: 36px;
       color: #e6b3ff;
-      text-shadow: 
+      text-shadow:
         2px 2px 0 #000,
        -2px 2px 0 #000,
         2px -2px 0 #000,
@@ -141,14 +141,71 @@
   <div class="mensaje-extra">🏱 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
 
   <script>
+    // --- Registro por dispositivo (localStorage) ---
+    // usados: marca códigos exitosos (válidos) ya confirmados en este dispositivo
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
+    // deviceLogV2: registra TODOS los intentos por código en este dispositivo con fecha/hora
+    // Estructura: { "ABC123": { count: 3, lastAt: "2025-08-13 00:15:03", history: ["...","..."] }, ... }
+    const deviceLogKey = 'deviceLogV2';
+    const deviceLog = JSON.parse(localStorage.getItem(deviceLogKey) || '{}');
+
+    const tzFormatter = new Intl.DateTimeFormat('es-AR', {
+      timeZone: 'America/Argentina/Buenos_Aires',
+      year: 'numeric', month: '2-digit', day: '2-digit',
+      hour: '2-digit', minute: '2-digit', second: '2-digit',
+      hour12: false
+    });
+
+    function nowAR() {
+      // Devuelve "YYYY-MM-DD HH:mm:ss" en horario de Buenos Aires
+      const parts = tzFormatter.formatToParts(new Date());
+      const get = t => parts.find(p => p.type === t)?.value.padStart(2, '0');
+      const Y = get('year');
+      const M = get('month');
+      const D = get('day');
+      const h = get('hour');
+      const m = get('minute');
+      const s = get('second');
+      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+    }
+
+    function bumpDeviceLog(codigo) {
+      const ts = nowAR();
+      if (!deviceLog[codigo]) {
+        deviceLog[codigo] = { count: 0, lastAt: null, history: [] };
+      }
+      deviceLog[codigo].count += 1;
+      deviceLog[codigo].lastAt = ts;
+      deviceLog[codigo].history.push(ts);
+      // Limita historial a las últimas 10 entradas para no inflar localStorage
+      if (deviceLog[codigo].history.length > 10) {
+        deviceLog[codigo].history = deviceLog[codigo].history.slice(-10);
+      }
+      localStorage.setItem(deviceLogKey, JSON.stringify(deviceLog));
+      return deviceLog[codigo];
+    }
+
+    function vecesTexto(n) {
+      // 1 vez / 2 veces
+      return n === 1 ? '1 vez' : `${n} veces`;
+    }
+
+    function mostrarMensajeRepetido(resultadoEl, codigo) {
+      const entry = deviceLog[codigo];
+      const count = entry?.count || 1;
+      const last = entry?.lastAt ? ` Última vez: ${entry.lastAt}.` : '';
+      resultadoEl.style.color = "#ffcc00";
+      resultadoEl.innerHTML = `🚫 Ya pusiste este código en este dispositivo (${vecesTexto(count)}).${last}`;
+    }
+
+    // --- Flujo principal ---
     function tirar() {
       const codigoInput = document.getElementById("codigo");
       const boton = document.getElementById("botonTirar");
       const resultado = document.getElementById("resultado");
       const botonRecargar = document.getElementById("botonRecargar");
-      const codigo = codigoInput.value.trim();
+      const codigo = (codigoInput.value || '').trim();
 
       if (!codigo) {
         resultado.style.color = "orange";
@@ -156,12 +213,20 @@
         return;
       }
 
+      // Registrar el intento en ESTE dispositivo (siempre)
+      const entry = bumpDeviceLog(codigo);
+
+      // Si ya estaba marcado como usado (válido previamente) en este dispositivo,
+      // NO llamamos al backend y mostramos el conteo y última vez.
       if (usados[codigo]) {
-        resultado.style.color = "#ffcc00";
-        resultado.innerHTML = "🚫 Este código ya fue utilizado.";
+        mostrarMensajeRepetido(resultado, codigo);
+        codigoInput.disabled = true;
+        boton.disabled = true;
+        botonRecargar.style.display = "inline-block";
         return;
       }
 
+      // Caso normal: consultar al backend
       fetch('/api/verificar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -170,30 +235,34 @@
       .then(res => res.json())
       .then(data => {
         if (data.estado === "valido") {
-          resultado.style.color = "#00ff00";
-          resultado.innerHTML = "✅ " + data.mensaje;
+          // Marca como usado (válido) en este dispositivo
           usados[codigo] = true;
           localStorage.setItem("usados", JSON.stringify(usados));
+          resultado.style.color = "#00ff00";
+          resultado.innerHTML = "✅ " + data.mensaje + `<br><small>Intentaste este código en este dispositivo ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
         } else if (data.estado === "usado") {
+          // No marcamos en "usados" (porque usado puede ser en otro dispositivo),
+          // pero mostramos el contador local de intentos.
           resultado.style.color = "#ffcc00";
-          resultado.innerHTML = "🚫 Este código ya fue utilizado.";
+          resultado.innerHTML = `🚫 Este código ya fue utilizado. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
         } else {
           resultado.style.color = "#ff3333";
-          resultado.innerHTML = "❌ Código inválido.";
+          resultado.innerHTML = `❌ Código inválido. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
         }
         codigoInput.disabled = true;
         boton.disabled = true;
         botonRecargar.style.display = "inline-block";
       })
-      .catch(err => {
+      .catch(() => {
         resultado.style.color = "red";
-        resultado.innerHTML = "❌ Error al verificar.";
+        resultado.innerHTML = `❌ Error al verificar. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
         codigoInput.disabled = true;
         boton.disabled = true;
         botonRecargar.style.display = "inline-block";
       });
     }
 
+    // --- Animación "ganadores" ---
     const nombres = ["TAM2****", "GONZA****", "VALI****", "GUST****", "NANC****"];
     const premios = ["GANÓ", "GANÓ", "GANÓ"];
     const valores = ["10K", "3.000 FICHAS", "20%", "125K TRANSFERENCIA", "30%"];
