@@ -141,62 +141,50 @@
   <div class="mensaje-extra">🏱 ¿TU CÓDIGO TIENE PREMIO? ¡SACÁ CAPTURA Y ENVIÁLA YA! 💬</div>
 
   <script>
-    // --- Registro por dispositivo (localStorage) ---
-    // usados: marca códigos exitosos (válidos) ya confirmados en este dispositivo
+    // --- Estados locales ---
+    // "usados": códigos que dieron "valido" en este dispositivo (no vuelve a consultar backend)
     const usados = JSON.parse(localStorage.getItem('usados') || '{}');
 
-    // deviceLogV2: registra TODOS los intentos por código en este dispositivo con fecha/hora
-    // Estructura: { "ABC123": { count: 3, lastAt: "2025-08-13 00:15:03", history: ["...","..."] }, ... }
-    const deviceLogKey = 'deviceLogV2';
+    // "deviceLogV3": registra SOLO la PRIMERA VEZ que se intentó cada código en este dispositivo
+    // Estructura: { "ABC123": { count: 1, firstAt: "YYYY-MM-DD HH:mm:ss" }, ... }
+    const deviceLogKey = 'deviceLogV3';
     const deviceLog = JSON.parse(localStorage.getItem(deviceLogKey) || '{}');
 
+    // Formateo de fecha/hora Buenos Aires
     const tzFormatter = new Intl.DateTimeFormat('es-AR', {
       timeZone: 'America/Argentina/Buenos_Aires',
       year: 'numeric', month: '2-digit', day: '2-digit',
       hour: '2-digit', minute: '2-digit', second: '2-digit',
       hour12: false
     });
-
     function nowAR() {
-      // Devuelve "YYYY-MM-DD HH:mm:ss" en horario de Buenos Aires
       const parts = tzFormatter.formatToParts(new Date());
       const get = t => parts.find(p => p.type === t)?.value.padStart(2, '0');
-      const Y = get('year');
-      const M = get('month');
-      const D = get('day');
-      const h = get('hour');
-      const m = get('minute');
-      const s = get('second');
-      return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+      return `${get('year')}-${get('month')}-${get('day')} ${get('hour')}:${get('minute')}:${get('second')}`;
     }
 
-    function bumpDeviceLog(codigo) {
-      const ts = nowAR();
+    function registrarIntentoPrimeraVez(codigo) {
+      // Si no existe, crea con count=1 y fija firstAt (NO se cambia nunca más)
+      // Si ya existe, solo incrementa count (NO toca firstAt)
       if (!deviceLog[codigo]) {
-        deviceLog[codigo] = { count: 0, lastAt: null, history: [] };
-      }
-      deviceLog[codigo].count += 1;
-      deviceLog[codigo].lastAt = ts;
-      deviceLog[codigo].history.push(ts);
-      // Limita historial a las últimas 10 entradas para no inflar localStorage
-      if (deviceLog[codigo].history.length > 10) {
-        deviceLog[codigo].history = deviceLog[codigo].history.slice(-10);
+        deviceLog[codigo] = { count: 1, firstAt: nowAR() };
+      } else {
+        deviceLog[codigo].count += 1;
       }
       localStorage.setItem(deviceLogKey, JSON.stringify(deviceLog));
       return deviceLog[codigo];
     }
 
     function vecesTexto(n) {
-      // 1 vez / 2 veces
       return n === 1 ? '1 vez' : `${n} veces`;
     }
 
-    function mostrarMensajeRepetido(resultadoEl, codigo) {
+    function mostrarRepetido(resultadoEl, codigo) {
       const entry = deviceLog[codigo];
       const count = entry?.count || 1;
-      const last = entry?.lastAt ? ` Última vez: ${entry.lastAt}.` : '';
+      const first = entry?.firstAt ? ` Primera vez: ${entry.firstAt}.` : '';
       resultadoEl.style.color = "#ffcc00";
-      resultadoEl.innerHTML = `🚫 Ya pusiste este código en este dispositivo (${vecesTexto(count)}).${last}`;
+      resultadoEl.innerHTML = `🚫 Ya pusiste este código en este dispositivo (${vecesTexto(count)}).${first}`;
     }
 
     // --- Flujo principal ---
@@ -213,20 +201,19 @@
         return;
       }
 
-      // Registrar el intento en ESTE dispositivo (siempre)
-      const entry = bumpDeviceLog(codigo);
+      // Registrar intento (fija la primera vez; luego SOLO suma contador)
+      const entry = registrarIntentoPrimeraVez(codigo);
 
-      // Si ya estaba marcado como usado (válido previamente) en este dispositivo,
-      // NO llamamos al backend y mostramos el conteo y última vez.
+      // Si ya quedó usado en este dispositivo, no consultamos backend
       if (usados[codigo]) {
-        mostrarMensajeRepetido(resultado, codigo);
+        mostrarRepetido(resultado, codigo);
         codigoInput.disabled = true;
         boton.disabled = true;
         botonRecargar.style.display = "inline-block";
         return;
       }
 
-      // Caso normal: consultar al backend
+      // Consultar backend
       fetch('/api/verificar-codigo', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
@@ -235,19 +222,16 @@
       .then(res => res.json())
       .then(data => {
         if (data.estado === "valido") {
-          // Marca como usado (válido) en este dispositivo
           usados[codigo] = true;
           localStorage.setItem("usados", JSON.stringify(usados));
           resultado.style.color = "#00ff00";
-          resultado.innerHTML = "✅ " + data.mensaje + `<br><small>Intentaste este código en este dispositivo ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
+          resultado.innerHTML = "✅ " + data.mensaje + `<br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)}. Primera vez: ${entry.firstAt}.</small>`;
         } else if (data.estado === "usado") {
-          // No marcamos en "usados" (porque usado puede ser en otro dispositivo),
-          // pero mostramos el contador local de intentos.
           resultado.style.color = "#ffcc00";
-          resultado.innerHTML = `🚫 Este código ya fue utilizado. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
+          resultado.innerHTML = `🚫 Este código ya fue utilizado. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)}. Primera vez: ${entry.firstAt}.</small>`;
         } else {
           resultado.style.color = "#ff3333";
-          resultado.innerHTML = `❌ Código inválido. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
+          resultado.innerHTML = `❌ Código inválido. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)}. Primera vez: ${entry.firstAt}.</small>`;
         }
         codigoInput.disabled = true;
         boton.disabled = true;
@@ -255,7 +239,7 @@
       })
       .catch(() => {
         resultado.style.color = "red";
-        resultado.innerHTML = `❌ Error al verificar. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)} (última: ${entry.lastAt}).</small>`;
+        resultado.innerHTML = `❌ Error al verificar. <br><small>En este dispositivo lo intentaste ${vecesTexto(entry.count)}. Primera vez: ${entry.firstAt}.</small>`;
         codigoInput.disabled = true;
         boton.disabled = true;
         botonRecargar.style.display = "inline-block";
